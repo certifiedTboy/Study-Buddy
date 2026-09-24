@@ -1,0 +1,16 @@
+export const languageAliases: Record<string, string> = {
+  js: "javascript",
+  jsx: "jsx",
+  ts: "typescript",
+  tsx: "tsx",
+  html: "markup",
+  xml: "markup",
+  shell: "bash",
+  sh: "bash",
+  py: "python",
+  rb: "ruby",
+  cs: "csharp",
+  "c#": "csharp",
+  cpp: "cpp",
+  "c++": "cpp",
+};
