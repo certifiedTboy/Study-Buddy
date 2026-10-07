@@ -4,7 +4,7 @@ from pathlib import Path
 from langchain_ollama import ChatOllama
 from pypdf import PdfReader
 from docx import Document as DocxDocument
-from blueprints.models import AssignmentRequirements
+from blueprints.models import AssignmentRequirements, SourceUrls
 from langchain_core.runnables import Runnable
 from typing import Any, cast, List
 from langchain_core.prompts import ChatPromptTemplate
@@ -174,6 +174,38 @@ def analyze_assignment(user_prompt: str, courseMaterials: str = ""):
     result = chain.invoke({"user_prompt": user_prompt, "courseMaterials": courseMaterials})
     
     return result.model_dump_json(indent=2)
+
+
+def retrieve_sources(user_prompt: str) -> List[str]:
+    """Extract source URLs relevant to the user's request."""
+    llm_structured: Runnable[Any, SourceUrls] = cast(
+        Runnable[Any, SourceUrls],
+        cast(Any, llm).with_structured_output(SourceUrls),
+    )
+
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            (
+                "system",
+                """
+                Identify URLs explicitly included in the user's request that
+                are relevant as sources. Do not answer or rewrite the request,
+                invent URLs, or include URLs that are not present in the
+                request. Return an empty list when no relevant URLs are
+                included.
+
+                USER REQUEST:
+                {user_prompt}
+                """,
+            )
+        ]
+    )
+
+    chain = prompt | llm_structured
+    result = chain.invoke({"user_prompt": user_prompt})
+
+    return result.urls
+
 
 def search(user_prompt: str) -> List[str]:
 
