@@ -86,6 +86,13 @@ class AssignmentRequirements(BaseModel):
     )
 
 
+class SourceUrls(BaseModel):
+    urls: List[str] = Field(
+        default_factory=list,
+        description="URLs relevant to the user's request.",
+    )
+
+
 
 class AssignmentEvaluation(BaseModel):
     passed: bool
